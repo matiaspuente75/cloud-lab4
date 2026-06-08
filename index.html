@@ -1,10 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Laboratorio IV</title>
+    <meta charset="UTF-8">
+    <title>Gestión de Tareas - Laboratorio IV</title>
 </head>
 <body>
-    <h1>Laboratorio IV - Computación en la Nube</h1>
-    <p>Prueba inicial del repositorio.</p>
+    <h1>Gestión de Tareas - Laboratorio IV</h1>
+
+    <p>
+        <input id="id_tarea" placeholder="ID de tarea">
+        <input id="titulo" placeholder="Título">
+        <input id="descripcion" placeholder="Descripción">
+        <label>
+            <input type="checkbox" id="completada">
+            Completada
+        </label>
+    </p>
+
+    <button onclick="crearTarea()">Crear Tarea</button>
+    <button onclick="cargarTareas()">Cargar Tareas</button>
+    <button onclick="obtenerTarea()">Obtener por ID</button>
+    <button onclick="actualizarTarea()">Actualizar Tarea</button>
+    <button onclick="eliminarTarea()">Eliminar Tarea</button>
+
+    <h3>Resultado:</h3>
+    <div id="resultado">Esperando acción...</div>
+
+    <script>
+        const API_URL = "/api/tareas";
+
+        function mostrar(data) {
+            document.getElementById("resultado").innerHTML =
+                "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+        }
+
+        function obtenerDatosFormulario() {
+            return {
+                titulo: document.getElementById("titulo").value,
+                descripcion: document.getElementById("descripcion").value,
+                completada: document.getElementById("completada").checked
+            };
+        }
+
+        async function crearTarea() {
+            const nuevaTarea = obtenerDatosFormulario();
+
+            const res = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(nuevaTarea)
+            });
+
+            const data = await res.json();
+            mostrar(data);
+        }
+
+        async function cargarTareas() {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+            mostrar(data);
+        }
+
+        async function obtenerTarea() {
+            const id = document.getElementById("id_tarea").value;
+
+            const res = await fetch(API_URL + "/" + id);
+            const data = await res.json();
+
+            mostrar(data);
+        }
+
+        async function actualizarTarea() {
+            const id = document.getElementById("id_tarea").value;
+            const tareaActualizada = obtenerDatosFormulario();
+
+            const res = await fetch(API_URL + "/" + id, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(tareaActualizada)
+            });
+
+            const data = await res.json();
+            mostrar(data);
+        }
+
+        async function eliminarTarea() {
+            const id = document.getElementById("id_tarea").value;
+
+            const res = await fetch(API_URL + "/" + id, {
+                method: "DELETE"
+            });
+
+            const data = await res.json();
+            mostrar(data);
+        }
+    </script>
 </body>
 </html>
