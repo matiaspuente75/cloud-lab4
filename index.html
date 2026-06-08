@@ -27,77 +27,77 @@
     <div id="resultado">Esperando acción...</div>
 
     <script>
-        const API_URL = "/api/tareas";
+    const API_URL = "/api/tareas";
 
-        function mostrar(data) {
-            document.getElementById("resultado").innerHTML =
-                "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
-        }
+    function mostrar(data) {
+        document.getElementById("resultado").innerHTML =
+            "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+    }
 
-        function obtenerDatosFormulario() {
-            return {
-                titulo: document.getElementById("titulo").value,
-                descripcion: document.getElementById("descripcion").value,
-                completada: document.getElementById("completada").checked
-            };
-        }
+    function obtenerDatosFormulario() {
+        return {
+            titulo: document.getElementById("titulo").value,
+            descripcion: document.getElementById("descripcion").value,
+            completada: document.getElementById("completada").checked
+        };
+    }
 
-        async function crearTarea() {
-            const nuevaTarea = obtenerDatosFormulario();
+    async function crearTarea() {
+        const nuevaTarea = obtenerDatosFormulario();
 
-            const res = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(nuevaTarea)
-            });
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(nuevaTarea)
+        });
 
-            const data = await res.json();
-            mostrar(data);
-        }
+        const data = await res.json();
+        mostrar(data);
+    }
 
-        async function cargarTareas() {
-            const res = await fetch(API_URL);
-            const data = await res.json();
-            mostrar(data);
-        }
+    async function cargarTareas() {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        mostrar(data);
+    }
 
-        async function obtenerTarea() {
-            const id = document.getElementById("id_tarea").value;
+    async function obtenerTarea() {
+        const id = document.getElementById("id_tarea").value;
 
-            const res = await fetch(API_URL + "/" + id);
-            const data = await res.json();
+        const res = await fetch(API_URL + "?tarea_id=" + id);
+        const data = await res.json();
 
-            mostrar(data);
-        }
+        mostrar(data);
+    }
 
-        async function actualizarTarea() {
-            const id = document.getElementById("id_tarea").value;
-            const tareaActualizada = obtenerDatosFormulario();
+    async function actualizarTarea() {
+        const id = document.getElementById("id_tarea").value;
+        const tareaActualizada = obtenerDatosFormulario();
 
-            const res = await fetch(API_URL + "/" + id, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(tareaActualizada)
-            });
+        const res = await fetch(API_URL + "?tarea_id=" + id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(tareaActualizada)
+        });
 
-            const data = await res.json();
-            mostrar(data);
-        }
+        const data = await res.json();
+        mostrar(data);
+    }
 
-        async function eliminarTarea() {
-            const id = document.getElementById("id_tarea").value;
+    async function eliminarTarea() {
+        const id = document.getElementById("id_tarea").value;
 
-            const res = await fetch(API_URL + "/" + id, {
-                method: "DELETE"
-            });
+        const res = await fetch(API_URL + "?tarea_id=" + id, {
+            method: "DELETE"
+        });
 
-            const data = await res.json();
-            mostrar(data);
-        }
-    </script>
+        const data = await res.json();
+        mostrar(data);
+    }
+</script>
 </body>
 </html>
