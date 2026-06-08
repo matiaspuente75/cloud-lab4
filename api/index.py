@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -22,8 +22,15 @@ class Tarea(BaseModel):
 tareas: List[Tarea] = []
 
 @app.get("/api/tareas")
-def listar_tareas():
-    return tareas
+def listar_u_obtener_tareas(tarea_id: Optional[int] = Query(default=None)):
+    if tarea_id is None:
+        return tareas
+
+    for tarea in tareas:
+        if tarea.id == tarea_id:
+            return tarea
+
+    raise HTTPException(status_code=404, detail="Tarea no encontrada")
 
 @app.post("/api/tareas")
 def crear_tarea(tarea: Tarea):
@@ -31,15 +38,8 @@ def crear_tarea(tarea: Tarea):
     tareas.append(tarea)
     return {"mensaje": "Tarea creada exitosamente", "tarea": tarea}
 
-@app.get("/api/tareas/{tarea_id}")
-def obtener_tarea(tarea_id: int):
-    for tarea in tareas:
-        if tarea.id == tarea_id:
-            return tarea
-    raise HTTPException(status_code=404, detail="Tarea no encontrada")
-
-@app.put("/api/tareas/{tarea_id}")
-def actualizar_tarea(tarea_id: int, tarea_actualizada: Tarea):
+@app.put("/api/tareas")
+def actualizar_tarea(tarea_actualizada: Tarea, tarea_id: int = Query(...)):
     for i, tarea in enumerate(tareas):
         if tarea.id == tarea_id:
             tarea_actualizada.id = tarea_id
@@ -48,12 +48,14 @@ def actualizar_tarea(tarea_id: int, tarea_actualizada: Tarea):
                 "mensaje": "Tarea actualizada exitosamente",
                 "tarea": tarea_actualizada
             }
+
     raise HTTPException(status_code=404, detail="Tarea no encontrada")
 
-@app.delete("/api/tareas/{tarea_id}")
-def eliminar_tarea(tarea_id: int):
+@app.delete("/api/tareas")
+def eliminar_tarea(tarea_id: int = Query(...)):
     for i, tarea in enumerate(tareas):
         if tarea.id == tarea_id:
             del tareas[i]
             return {"mensaje": "Tarea eliminada exitosamente"}
+
     raise HTTPException(status_code=404, detail="Tarea no encontrada")
